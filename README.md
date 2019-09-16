@@ -148,4 +148,11 @@ var http = require('http')
     - a.com b.com
     - a.com 还会请求a
     - a 告诉浏览器不记忆
-
+- Express
+  + art-template 模板引擎的配置
+  + body-parser解析表单POST请求体
+- 技术知识一种解决问题的手段，工具而已
+  + 第三方工具，不要纠结
+  + 先以解决问题为主
+- 详解Express中的静态服务API
+  + app.use('/public',express.static('./public'))
