@@ -156,3 +156,80 @@ var http = require('http')
   + 先以解决问题为主
 - 详解Express中的静态服务API
   + app.use('/public',express.static('./public'))
+
+
+---------------------------------------------------------------------------------
+- 建立项目文件夹-blog
+- 初始化npm
+  ```
+  npm init -y
+  ```
+- 初始化git仓库
+  ```
+  git init
+  ```
+- 创建一个文件.gitignore  ===>忽略文件，用来配置忽略配置项（哪些东西不需要提交到github上面）
+- 创建一个新的文件夹===> public 里面都是公开的静态资源
+   - public文件夹下创建文件夹 ===> css  客户端需要的样式
+   - public文件夹下创建文件夹 ===> img  客户端需要的图片
+   - public文件夹下创建文件夹 ===> js   客户端需要的脚本
+- 新建一个文件app.js
+- 安装各种第三方的包（express/mongoose/art-template/express-art-template）
+    - 引入各种配置文件
+        ```
+          var express = require('express')
+          var path = require('path')
+
+          var app = express()
+
+          app.use('/public/', express.static(path.join(__dirname,'./public')))
+          app.use('/node_modules/', express.static(path.join(__dirname, './node_modules/')))
+
+          app.engine('html', require('express-art-template'))
+
+
+
+          app.get('/',function(req,res){
+            res.send('hello')
+          })
+
+          app.listen(5000, function(){
+            console.log('running...')
+          })
+        ```
+
+- 插入的新知识：
+    - path路径操作模块
+      - path.basename 获取路径的一个文件名 (默认包含扩展名)
+      - path.dirname  获取一个路径中的目录部分
+      - path.extname  获取路径中的扩展名部分
+      - path.parse  把一个路径转为对象 root根路径   
+      - path.join 当需要进行路径拼接的时候，推荐使用这个方法 
+          + root根路径
+          + dir 目录
+          + base 包含后缀名的文件名
+          + ext 后缀名
+          + name 不包含后缀名的文件名
+      - path.isAbsolute  判断一个路径是否是绝对路径
+
+    - Node中的其他成员
+        + 在每个模块中，除了`require`，`exports`等模块相关API之外，还有两个特殊的成员
+        + __dirname **动态的获取**可以用来获取当前文件模块所属目录的绝对路径 
+        + __filename **动态获取**可以用来获取当前文件的绝对路径
+        + `__dirname` 和 `filename`是不受node命令所属路径影响的
+
+        + 在文件操作中，使用相对路径是不可靠的，因为在Node中文件操作的路径被设计为相对于执行node命令所处的路径（不是bug）
+        + 只需要把相对路径变为绝对路径就可以解决这个问题
+        + 那这里我们就可以勇士`__dirname`或者`__filename`来帮我们解决这个问题
+        + 在拼接路径中，为了避免手动凭借带来的一些低级错误，所以推荐多使用：`path.join()`来辅助拼接
+        + 为了尽量避免刚才所描述的问题，大家以后再文件操作中使用的相对路径都统一转换为**动态的相对路径**
+        > 补充:模块中的路径标识和这里的路径没关系，不受影响（相对于文件模块）
+- 路由设计
+    |   路径    |方法    |get参数|post参数                  |是否需要登陆|       备注   |
+    |/         | GET    |      |                         |          |   渲染首页     |
+    |/register | GET    |      |                         |          | 渲染注册页面    |
+    |/register | POST   |      |email、nickname、password |          | 处理注册请求    |
+    |/login    | GET    |      |                          |          |渲染登陆页面     |
+    |/login    | POST   |      |email、password           |          |处理登陆请求     |
+    |/logout   | GET    |      |                          |          |处理退出请求     |
+     
