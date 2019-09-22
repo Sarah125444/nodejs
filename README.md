@@ -267,3 +267,61 @@ var http = require('http')
    + 在Node中没有全局作用域，它是文件模块作用域
    + 模块是独立的，不能因为a加载过fs了b就不需要，正确的做法是a文件需要fs则a文件就加载fs，b文件需要fs，则b文件就加载fs
 
+- 中间件
+  + 中间件的本质是一个请求处理方法，我们把用户从请求到响应的整个过程分发到多个中间件去处理，这样做的目的是提高代码的灵活性，动态可扩展
+  + 同一个请求所经过的中间件都是同一个请求对象和响应对象
+- 中间件的应用
+  + 万能匹配（不关心任何请求路径和请求方法）
+  ```
+    app.use(function(req,res,next){
+      console.log('Time:',Date.now())
+      next()
+    })
+  ```
+  + 只要是以'/xxx/'开头的
+  ```
+    app.use('/a', function(req,res,next){
+      console.log('Time:',Date.now())
+      next()
+    })
+  ```
+- 路由级别中间件
+  + get
+    ```
+    app.get('/',function(req,res){
+      res.send('hello world')
+    })
+    ```
+  + post
+    ```
+    app.post('/', function(req,res){
+      res.send('Got a Post request')
+    })
+    ```
+  + put
+    ```
+    app.put('/user', function(req,res){
+      res.send('Got a PUT request at /user')
+    })
+    ```
+  + delete
+    ```
+    app.use('/user', function(req,res){
+      res.send('Got a DELETE request at /user')
+    })
+    ```
+- 错误处理中间件
+    ```
+     app.use(function(req,res,next){
+       console.error(err.stack)
+       res.status(500).send('Something broke!')
+     })
+    ```
+- 第三方中间件
+  + body-parser
+  + compression
+  + cookie-parser
+  + morgan
+  + response-time
+  + serve-static
+  + session
