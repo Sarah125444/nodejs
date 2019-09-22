@@ -225,12 +225,45 @@ var http = require('http')
         + 为了尽量避免刚才所描述的问题，大家以后再文件操作中使用的相对路径都统一转换为**动态的相对路径**
         > 补充:模块中的路径标识和这里的路径没关系，不受影响（相对于文件模块）
 
-     - 路由设计
-    |   路径    |方法    |get参数|post参数                  |是否需要登陆|       备注   |
-    |----------|--------|------|--------------------------|----------|-------------|
-    |/         | GET    |      |                         |          |   渲染首页     |
-    |/register | GET    |      |                         |          | 渲染注册页面    |
-    |/register | POST   |      |email、nickname、password |          | 处理注册请求    |
-    |/login    | GET    |      |                         |          |渲染登陆页面     |
-    |/login    | POST   |      |email、password          |          |处理登陆请求     |
-    |/logout   | GET    |      |                         |          |处理退出请求     |
+- 在Express中配置使用express-session插件
+    - 安装
+    ```
+    npm install express-session
+    ```
+    - 配置
+    ```
+    # 该插件会为req请求对象添加一个成员：req.session默认是一个对象
+    # 这是最简单的配置方式，暂且先不用关心里面参数的含义
+
+    app.use(session({
+      secret: 'keyboard cat',   配置加密字符串，它会在原有加密基础之上和这个字符串拼接起来去加密 目的是为了增加安全性，防止客户端恶意伪造
+      resave: false,
+      saveUninitialized: true
+    }))
+    ```
+    - 使用
+    ```
+    # 添加Session数据
+    req.session.foo = 'bar'
+
+    # 获取Session数据
+    req.session.foo
+    ```
+    提示：默认Session数据是内存存储的，服务器一旦重启就会丢失，真正的生产环境会把Session进行持久化存储
+- Express中配置使用express-session插件
+    + 插件也是工具 你只需要明确你的目标就可以了
+    + 我们的目标是使用session来帮我们管理一些敏感信息数据状态，例如保存登陆状态
+    + 写session 
+      * req.session.xxx = xx
+    + 读session
+      * req.session.xxx
+    + 删除Session
+      * req.session.xxx = null
+      * 更严谨的做法是`delete`语法
+      * delete req.session.xxx
+
+
+- Node模块加载
+   + 在Node中没有全局作用域，它是文件模块作用域
+   + 模块是独立的，不能因为a加载过fs了b就不需要，正确的做法是a文件需要fs则a文件就加载fs，b文件需要fs，则b文件就加载fs
+
