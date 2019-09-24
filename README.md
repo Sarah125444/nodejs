@@ -325,3 +325,89 @@ var http = require('http')
   + response-time
   + serve-static
   + session
+##  ES6-babel
+   + 第一：在项目根目录下面创建一个`.babelrc`
+   + 进入这个文件写入以下内容：
+      ```json
+        {
+          "preset":[
+
+          ]
+        }
+      ```
+  + 第二：安装专门的转码规则
+    ```bash
+      # ES2015转码规则
+      npm install --save-dev babel-preset-es2015
+
+      # react转码规则
+      npm install --save-dev babel-preset-react
+
+    ```
+      + --save和--save-dev
+        - 通过`--save`参数安装的包，是将依赖项目保存到package.json文件中的dependencies选项中
+        -  通过`--save-dev`参数安装的包，是将依赖项保存到package.json文件中的devDependencies选项中
+        - 无论是`--save`或是`--save-dev`安装的包，通过执行 `npm install`都会将对应的依赖包安装进来。
+        - 但是在开发阶段会有一些仅仅用来辅助开发的一些第三方包或是工具，然后最终上线运行（到了生产环境），这些开发依赖项就不再需要了，就可以通过`npm install --production`命令仅仅安装`dependencies`中的依赖项，
+  + 第三：将`.babelrc`文件中修改为一下内容：
+      ```json
+        {
+          "presets":[
+            "es2015"
+          ]
+        }
+
+      ```
+  + 第四：
+    - babel-cli : 命令行转码
+    - babel-node: babel-cli工具自带一个babel-node命令，提供一个支持ES6的REPL环境
+    - babel-register：实时转码，所以只适合在开发环境中使用
+    - babel-core：如果某些代码需要调用Babel的API进行转码，就要使用babel-core模块
+  + babel-cli：一种方式是全局安装：`npm install -g babel-cli(可以通过`npm root -g`查看全局包的安装目录)`
+    只要全局安装了`babel-cli`，则会在命令行中多出一个命令：`babel`
+## Express
+  + hello world
+     + 1.先引入包
+       ```
+       const express = require('express')
+       ```
+      + 2.调用express()方法，得到一个app实例接口对象
+        ```
+        const app = express()
+        ```
+      + 3.通过app设置对应的路径对应的请求处理函数
+        ```
+          app.get('/login',(req,res) => {
+            //end用力结束响应的同时发送响应数据
+            res.end('hello login')
+          })
+        ```
+      + 4.开启监听，启动服务器
+       ```
+        app.listen(3000,() => {
+          console.log('服务已启动，请访问：http://127.0.0.1:3000/')
+        })
+       ```
+  + 基本路由
+     + 根据不同的请求路径分发到具体的请求处理函数
+  + 处理静态资源
+  + 中间件
+        + 中间件是用来处理http请求的一个具体的环节（可能是要执行某个具体的处理函数）
+        + 中间件一般是通过修改req或者res对象来为后续的处理提供遍历的使用
+      + 中间件分类
+        + `use(function(req,res,next){})`不关心请求方法和请求路径，没有路由规则，任何请求都会进入该中间件
+        + `use('请求路径' , function(req,res,next){})`不关心请求方法，只关心请求路径的中间件
+        + `get('请求路径', function(req,res,next){})`具体路由规则中间件
+        + `post('请求路径', function(req,res,next){})`
+      + 中间件的作用：
+        + 在http中，没有请求就没有响应，服务端不可能主动个客户端发请求，就是一问一答的形式
+        + 对于一次请求来说，只能响应一次，如果发送了多次响应，则只有第一次生效
+        + 假如有请求进入了中间件，调用的next会执行下一个能匹配的中间件
+      + 中间件处理404
+        + 一定是加在中间件的最后一个，因为404是所有的中间件的网址配置不到的页面，也就是在`app.listen`前面
+        + 添加的代码为
+          ```
+            app.use((req,res,next) => {
+              res.end('404')
+            })
+          ```
